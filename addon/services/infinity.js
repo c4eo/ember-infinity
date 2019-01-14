@@ -307,13 +307,15 @@ export default Service.extend({
       .then(newObjects => this._afterInfinityModel(newObjects, infinityModel))
       .then(newObjects => this._doUpdate(newObjects, infinityModel))
       .then(infinityModel => {
+        if (typeof FastBoot === 'undefined') {
+          let viewportElem = get(infinityModel, '_scrollable') ? document.querySelector(get(infinityModel, '_scrollable')) : (document.scrollingElement || document.documentElement);
+          scheduleOnce('afterRender', this, '_updateScrollTop', { infinityModel, viewportElem, increment });
+        }
         if (increment === 1) {
           // scroll down to load next page
           infinityModel.incrementProperty('currentPage');
         } else {
           if (typeof FastBoot === 'undefined') {
-            let viewportElem = get(infinityModel, '_scrollable') ? document.querySelector(get(infinityModel, '_scrollable')) : (document.scrollingElement || document.documentElement);
-            scheduleOnce('afterRender', this, '_updateScrollTop', { infinityModel, viewportElem });
             // scrolled up to load previous page
             infinityModel.decrementProperty('currentPage');
           }
@@ -357,8 +359,8 @@ export default Service.extend({
     @method _updateScrollTop
     @return Integer
    */
-  _updateScrollTop({ infinityModel, viewportElem }) {
-    let scrollDiff = this._calculateHeight(infinityModel) - get(this, '_previousScrollHeight');
+  _updateScrollTop({ infinityModel, viewportElem, increment }) {
+    let scrollDiff = increment * (get(this, '_previousScrollHeight') - this._calculateHeight(infinityModel));
     viewportElem.scrollTop += scrollDiff;
   },
 
