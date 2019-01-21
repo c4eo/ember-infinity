@@ -63,6 +63,13 @@ const InfinityLoaderComponent = Component.extend(InViewportMixin, {
    */
   scrollable: null,
   /**
+   * set if false viewport element is not from scrollable
+   *
+   * @public
+   * @property useScrollableViewport
+   */
+  useScrollableViewport: true,
+  /**
    * offset from bottom of target and viewport
    *
    * @public
@@ -80,7 +87,7 @@ const InfinityLoaderComponent = Component.extend(InViewportMixin, {
   init() {
     this._super(...arguments);
 
-    let scrollableArea = get(this, 'scrollable');
+    let scrollableArea = get(this, 'useScrollableViewport') ? get(this, 'scrollable') : null;
     this.setProperties({
       viewportSpy: true,
       viewportTolerance: {
